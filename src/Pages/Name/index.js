@@ -16,31 +16,6 @@ import {
 const Name = ({ navigation }) => {
   const [name, setName] = useState("");
 
-  const handleSubmit = async () => {
-    await axios
-      .post("/tests", values)
-      .then((response) => {
-        console.log(response);
-        if (response) {
-          setName("");
-        }
-      })
-      .catch((error) => {
-        Alert.alert("Hata", "Bir sorun oluştu, lütfen tekrar deneyin.", [
-          { text: "Tamam" },
-        ]);
-      });
-  };
-
-  const list = [
-    { label: "RBC", value: "rbc" },
-    { label: "HGB", value: "hgb" },
-    { label: "HCT", value: "hct" },
-    { label: "MCV", value: "mcv" },
-    { label: "MCH", value: "mch" },
-    { label: "MCHC", value: "mchc" },
-  ];
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.container}>

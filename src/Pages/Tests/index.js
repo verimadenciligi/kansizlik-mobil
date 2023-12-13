@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -7,25 +7,43 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import axios from "axios";
 import { Icon } from "react-native-elements";
 
-const testData = [
-  { id: 1, testName: "Test 1", performedBy: "John Doe", result: "Pass" },
-  { id: 2, testName: "Test 2", performedBy: "Jane Smith", result: "Fail" },
-];
-
 const Tests = ({ navigation }) => {
+  const [testData, setTestData] = useState([]);
+
+  const handleGet = async () => {
+    await axios
+      .get(`${process.env.API_PATH}/tests`)
+      .then((res) => res.data)
+      .then((response) => {
+        if (response) {
+          setTestData(response);
+        }
+      })
+      .catch((error) => {
+        Alert.alert("Hata", "Bir sorun oluştu, lütfen tekrar deneyin.", [
+          { text: "Tamam" },
+        ]);
+      });
+  };
+
+  useEffect(async () => {
+    await handleGet();
+  }, []);
+
   const renderTestItem = ({ item, index }) => (
     <View style={styles.item}>
       <View>
-        <Text style={styles.title}>Test {item.id}</Text>
+        <Text style={styles.title}>Test {index + 1}</Text>
         <View style={{ flexDirection: "row" }}>
           <Text style={{ fontWeight: "bold" }}>Test Sahibi:</Text>
-          <Text>{item.performedBy}</Text>
+          <Text>{item.name}</Text>
         </View>
         <View style={{ flexDirection: "row" }}>
           <Text style={{ fontWeight: "bold" }}>Sonuç:</Text>
-          <Text>{item.result}</Text>
+          <Text>{item.result ? "Kansızlık var" : "Kansızlık yok"}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -44,8 +62,9 @@ const Tests = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
         <FlatList
+          key={(testData) => testData._id}
           data={testData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item._id}
           renderItem={renderTestItem}
         />
       </View>

@@ -1,11 +1,10 @@
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
   TextInput,
-  Button,
   View,
   Keyboard,
   TouchableWithoutFeedback,
@@ -14,42 +13,62 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+const list = [
+  { label: "HGB", value: "hgb" },
+  { label: "RBC", value: "rbc" },
+  { label: "HCT", value: "hct" },
+  { label: "MCV", value: "mcv" },
+  { label: "MCH", value: "mch" },
+  { label: "MCHC", value: "mchc" },
+];
+let values = {};
+
 const AnemiForm = ({ navigation }) => {
   const [index, setIndex] = useState(0);
   const [input, setInput] = useState("");
-  const [values, setValues] = useState({});
   const [finished, setFinished] = useState(false);
+  const [selected, setSelected] = useState(list[0]);
+  const [result, setResult] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const route = useRoute();
   const { username } = route.params;
 
   const handleSubmit = async () => {
-    setFinished(true);
-
+    setInput("");
     await axios
-      .post("/tests", values)
+      .post(`${process.env.API_PATH}/tests`, {
+        ...values,
+        name: username,
+      })
+      .then((res) => res.data)
       .then((response) => {
-        console.log(response);
+        setFinished(true);
         if (response) {
-          setInput("");
+          setIsSuccess(true);
+          setResult(response.result);
+          Alert.alert(
+            "Bilgilendirme",
+            response.result
+              ? "Kansızlığınız bulunmaktadır."
+              : "Kansızlığınız yoktur.",
+            [{ text: "Tamam" }]
+          );
         }
       })
       .catch((error) => {
-        Alert.alert("Hata", "Bir sorun oluştu, lütfen tekrar deneyin.", [
-          { text: "Tamam" },
-        ]);
+        if (error.response.status === 400) {
+          setIsSuccess(false);
+          setSelected(
+            list.find((item) => item.value === error.response.data.data)
+          );
+        } else {
+          Alert.alert("Hata", "Bir sorun oluştu, lütfen tekrar deneyin.", [
+            { text: "Tamam" },
+          ]);
+        }
       });
   };
 
-  const list = [
-    { label: "RBC", value: "rbc" },
-    { label: "HGB", value: "hgb" },
-    { label: "HCT", value: "hct" },
-    { label: "MCV", value: "mcv" },
-    { label: "MCH", value: "mch" },
-    { label: "MCHC", value: "mchc" },
-  ];
-
-  const selected = list[index];
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -103,16 +122,14 @@ const AnemiForm = ({ navigation }) => {
                       ]);
                       return;
                     } else {
-                      setValues({
+                      values = {
                         ...values,
                         [selected.value]: input,
-                      });
-                      setInput("");
+                      };
+                      await handleSubmit();
 
-                      if (index !== list.length - 1) {
+                      if (index !== list.length - 1 && !isSuccess) {
                         setIndex((i) => i + 1);
-                      } else {
-                        await handleSubmit();
                       }
                     }
                   }}
