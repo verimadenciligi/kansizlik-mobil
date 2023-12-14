@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import { Icon } from "react-native-elements";
@@ -29,8 +30,8 @@ const Tests = ({ navigation }) => {
       });
   };
 
-  useEffect(async () => {
-    await handleGet();
+  useEffect(() => {
+    handleGet();
   }, []);
 
   const renderTestItem = ({ item, index }) => (
@@ -49,7 +50,8 @@ const Tests = ({ navigation }) => {
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("TestDetail", {
-            testId: item.id,
+            testId: index + 1,
+            ...item,
           })
         }
       >
@@ -62,7 +64,6 @@ const Tests = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
         <FlatList
-          key={(testData) => testData._id}
           data={testData}
           keyExtractor={(item) => item._id}
           renderItem={renderTestItem}

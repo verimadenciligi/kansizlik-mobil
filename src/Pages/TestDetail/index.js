@@ -9,19 +9,6 @@ import {
 import { useRoute } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 
-const data = {
-  id: 1,
-  testName: "Test 1",
-  performedBy: "John Doe",
-  result: "Pass",
-  rbc: 1,
-  hgb: 1,
-  hct: 1,
-  mcv: 1,
-  mch: 1,
-  mchc: 5,
-};
-
 const list = [
   { label: "RBC", value: "rbc" },
   { label: "HGB", value: "hgb" },
@@ -33,7 +20,7 @@ const list = [
 
 const TestDetail = ({ navigation }) => {
   const route = useRoute();
-  const { testId } = route.params;
+  const { testId, ...data } = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,20 +28,23 @@ const TestDetail = ({ navigation }) => {
         <Text style={styles.title}>Test {testId}</Text>
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.titles}>Test Sahibi: </Text>
-          <Text style={styles.values}>{data.performedBy}</Text>
+          <Text style={styles.values}>{data.name}</Text>
         </View>
         <View style={styles.body}>
           <Text style={styles.valuesTitle}>Değerler</Text>
           {list.map((item, idx) => (
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.itemTitle}>{item.label}: </Text>
-              <Text style={styles.itemValue}>{data[item.value]}</Text>
+              <Text style={styles.itemValue}>{data[item.value] || "-"}</Text>
             </View>
           ))}
         </View>
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.result}>
-            Bu değerler sonucunda herhangi bir hastalığınız olmadığı görülmüştür.
+            Bu değerler sonucunda{" "}
+            {data.result
+              ? "kansızlığınızın olduğu görülmüştür. Lütfen doktorunuzun tavsiye ettiği şekilde tedavinizi uygulayınız. "
+              : "kansızlığınızın olmadığı görülmüştür "}
           </Text>
         </View>
         <View style={styles.fixToText}>
