@@ -26,7 +26,6 @@ let values = {};
 const AnemiForm = ({ navigation }) => {
   const [index, setIndex] = useState(0);
   const [input, setInput] = useState("");
-  const [finished, setFinished] = useState(false);
   const [selected, setSelected] = useState(list[0]);
   const [result, setResult] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -42,7 +41,6 @@ const AnemiForm = ({ navigation }) => {
       })
       .then((res) => res.data)
       .then((response) => {
-        setFinished(true);
         if (response) {
           setIsSuccess(true);
           setResult(response.result);
@@ -51,7 +49,17 @@ const AnemiForm = ({ navigation }) => {
             response.result
               ? "Kansızlığınız bulunmaktadır."
               : "Kansızlığınız yoktur.",
-            [{ text: "Tamam" }]
+            [
+              {
+                text: "Tamam",
+                onPress: () =>
+                  navigation.navigate("TestDetail", {
+                    ...response,
+                    testId: index + 1,
+                    username: response.name,
+                  }),
+              },
+            ]
           );
         }
       })
@@ -69,78 +77,65 @@ const AnemiForm = ({ navigation }) => {
       });
   };
 
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.container}>
         <View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={styles.welcome}>Hoşgeldin,</Text>
-            <Text style={styles.welcomeUser}>{username}</Text>
+          <View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.welcome}>Hoşgeldin,</Text>
+              <Text style={styles.welcomeUser}>{username}</Text>
+            </View>
+            <Text
+              style={styles.title}
+            >{`Lütfen ${selected.label} değerini giriniz`}</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setInput}
+              value={input}
+              placeholder={selected.label}
+              keyboardType="numeric"
+              placeholderTextColor="#827F83"
+            />
+            <View style={styles.fixToText}>
+              <TouchableOpacity
+                style={styles.buttonBack}
+                disabled={index === 0}
+                onPress={() => {
+                  if (index !== 0) {
+                    setIndex((i) => i - 1);
+                  }
+                }}
+              >
+                <Text style={styles.buttonBackText}>Geri</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={async () => {
+                  if (!input) {
+                    Alert.alert("Uyarı", "Lütfen bir değer girin.", [
+                      { text: "Tamam" },
+                    ]);
+                    return;
+                  } else {
+                    values = {
+                      ...values,
+                      [selected.value]: input,
+                    };
+                    await handleSubmit();
+
+                    if (index !== list.length - 1 && !isSuccess) {
+                      setIndex((i) => i + 1);
+                    }
+                  }
+                }}
+              >
+                <Text style={styles.buttonText}>
+                  {index !== list.length - 1 ? "İlerle" : "Bitir"}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          {finished ? (
-            <View>
-              <Text style={styles.title}>Değerler:</Text>
-              {list.map((item, idx) => (
-                <Text key={idx}>{`${item.label}: ${
-                  values[item.value] || "-"
-                }`}</Text>
-              ))}
-            </View>
-          ) : (
-            <View>
-              <Text
-                style={styles.title}
-              >{`Lütfen ${selected.label} değerini giriniz`}</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={setInput}
-                value={input}
-                placeholder={selected.label}
-                keyboardType="numeric"
-                placeholderTextColor="#827F83"
-              />
-              <View style={styles.fixToText}>
-                <TouchableOpacity
-                  style={styles.buttonBack}
-                  disabled={index === 0}
-                  onPress={() => {
-                    if (index !== 0) {
-                      setIndex((i) => i - 1);
-                    }
-                  }}
-                >
-                  <Text style={styles.buttonBackText}>Geri</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={async () => {
-                    if (!input) {
-                      Alert.alert("Uyarı", "Lütfen bir değer girin.", [
-                        { text: "Tamam" },
-                      ]);
-                      return;
-                    } else {
-                      values = {
-                        ...values,
-                        [selected.value]: input,
-                      };
-                      await handleSubmit();
-
-                      if (index !== list.length - 1 && !isSuccess) {
-                        setIndex((i) => i + 1);
-                      }
-                    }
-                  }}
-                >
-                  <Text style={styles.buttonText}>
-                    {index !== list.length - 1 ? "İlerle" : "Bitir"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
         </View>
         <View style={styles.quitArea}>
           <TouchableOpacity
@@ -188,8 +183,13 @@ const styles = StyleSheet.create({
   },
   title: {
     paddingTop: 5,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
     fontWeight: "bold",
+  },
+  values: {
+    paddingTop: 5,
+    paddingHorizontal: 12,
+    color: "grey",
   },
   button: {
     backgroundColor: "#BD1A01",
@@ -216,6 +216,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "flex-end",
+  },
+  wrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  table_head: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+    padding: 7,
+    backgroundColor: "#BD1A01",
+    borderRadius: 5,
+  },
+  table_head_captions: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  table_body_single_row: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+    padding: 7,
+  },
+  table_data: {
+    fontSize: 15,
+  },
+  table: {
+    margin: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 1,
+    backgroundColor: "#fff",
   },
 });
 

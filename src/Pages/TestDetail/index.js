@@ -30,14 +30,35 @@ const TestDetail = ({ navigation }) => {
           <Text style={styles.titles}>Test Sahibi: </Text>
           <Text style={styles.values}>{data.name}</Text>
         </View>
-        <View style={styles.body}>
-          <Text style={styles.valuesTitle}>Değerler</Text>
-          {list.map((item, idx) => (
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.itemTitle}>{item.label}: </Text>
-              <Text style={styles.itemValue}>{data[item.value] || "-"}</Text>
+        <View>
+          <View style={styles.table}>
+            <View style={styles.table_head}>
+              <View style={{ width: "15%" }}>
+                <Text style={styles.table_head_captions}>No</Text>
+              </View>
+              <View style={{ width: "45%" }}>
+                <Text style={styles.table_head_captions}>Hormonlar</Text>
+              </View>
+              <View style={{ width: "45%" }}>
+                <Text style={styles.table_head_captions}>Değerler</Text>
+              </View>
             </View>
-          ))}
+            {list.map((item, idx) => (
+              <View style={styles.table_body_single_row}>
+                <View style={{ width: "15%" }}>
+                  <Text style={styles.table_data}>{idx + 1}</Text>
+                </View>
+                <View style={{ width: "45%" }}>
+                  <Text style={styles.table_data}>{item.label}</Text>
+                </View>
+                <View style={{ width: "45%" }}>
+                  <Text style={styles.table_data}>
+                    {data[item.value] || "-"}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
         </View>
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.result}>
@@ -90,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#BD1A01"
+    color: "#BD1A01",
   },
   description: {
     textAlign: "justify",
@@ -147,6 +168,41 @@ const styles = StyleSheet.create({
   buttonBackText: {
     color: "#BD1A01",
     fontWeight: "bold",
+  },
+  wrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  table_head: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+    padding: 7,
+    backgroundColor: "#BD1A01",
+    borderRadius: 5,
+  },
+  table_head_captions: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  table_body_single_row: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+    padding: 7,
+  },
+  table_data: {
+    fontSize: 15,
+  },
+  table: {
+    margin: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 1,
+    backgroundColor: "#fff",
   },
 });
 
