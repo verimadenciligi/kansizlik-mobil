@@ -44,7 +44,7 @@ const TestDetail = ({ navigation }) => {
               </View>
             </View>
             {list.map((item, idx) => (
-              <View style={styles.table_body_single_row}>
+              <View style={styles.table_body_single_row} key={idx}>
                 <View style={{ width: "15%" }}>
                   <Text style={styles.table_data}>{idx + 1}</Text>
                 </View>
