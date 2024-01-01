@@ -44,6 +44,7 @@ const AnemiForm = ({ navigation }) => {
         if (response) {
           setIsSuccess(true);
           setResult(response.result);
+          values = {};
           Alert.alert(
             "Bilgilendirme",
             response.result

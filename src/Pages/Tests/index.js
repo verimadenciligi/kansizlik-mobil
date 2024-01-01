@@ -63,11 +63,13 @@ const Tests = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
-        <FlatList
-          data={testData}
-          keyExtractor={(item) => item._id}
-          renderItem={renderTestItem}
-        />
+        {testData?.length > 0 && (
+          <FlatList
+            data={testData}
+            keyExtractor={(item) => item._id}
+            renderItem={renderTestItem}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -77,6 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    justifyContent: "center",
   },
   item: {
     flexDirection: "row",
