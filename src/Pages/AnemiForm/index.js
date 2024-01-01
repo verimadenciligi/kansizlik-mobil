@@ -32,6 +32,22 @@ const AnemiForm = ({ navigation }) => {
   const route = useRoute();
   const { username } = route.params;
 
+  // const navigateDetail = async () => {
+  //   const res = await axios
+  //     .get(`${process.env.API_PATH}/tests`)
+  //     .then((res) => res.data)
+  //     .then((response) => {
+  //       if (response) {
+  //         setTestData(response);
+  //       }
+  //     })
+  //     navigation.navigate("TestDetail", {
+  //                   ...response,
+  //                   testId: index + 1,
+  //                   username: response.name,
+  //                 }),
+  // }
+
   const handleSubmit = async () => {
     setInput("");
     await axios
@@ -53,12 +69,25 @@ const AnemiForm = ({ navigation }) => {
             [
               {
                 text: "Tamam",
-                onPress: () =>
-                  navigation.navigate("TestDetail", {
-                    ...response,
-                    testId: index + 1,
-                    username: response.name,
-                  }),
+                onPress: async () => {
+                  await axios
+                    .get(`${process.env.API_PATH}/tests`)
+                    .then((res) => res.data)
+                    .then((res) => {
+                      navigation.navigate("TestDetail", {
+                        ...response,
+                        testId: res.length,
+                        username: response.name,
+                      });
+                    })
+                    .catch((error) => {
+                      Alert.alert(
+                        "Hata",
+                        "Bir sorun oluştu, lütfen tekrar deneyin.",
+                        [{ text: "Tamam" }]
+                      );
+                    });
+                },
               },
             ]
           );
@@ -103,6 +132,11 @@ const AnemiForm = ({ navigation }) => {
                 style={styles.buttonBack}
                 disabled={index === 0}
                 onPress={() => {
+                  const last = Object.keys(values).pop();
+
+                  setSelected(list.find((item) => item.value === last));
+                  delete values[last];
+
                   if (index !== 0) {
                     setIndex((i) => i - 1);
                   }

@@ -64,7 +64,7 @@ const TestDetail = ({ navigation }) => {
           <Text style={styles.result}>
             Bu değerler sonucunda{" "}
             {data.result
-              ? "kansızlığınızın olduğu görülmüştür. Lütfen doktorunuzun tavsiye ettiği şekilde tedavinizi uygulayınız. "
+              ? "kansızlığınızın olduğu görülmüştür."
               : "kansızlığınızın olmadığı görülmüştür "}
           </Text>
         </View>
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     margin: 5,
     color: "grey",
+    fontWeight: "bold",
   },
   fixToText: {
     flexDirection: "row",

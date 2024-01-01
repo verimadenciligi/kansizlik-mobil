@@ -70,6 +70,15 @@ const Tests = ({ navigation }) => {
             renderItem={renderTestItem}
           />
         )}
+        {testData?.length === 0 && (
+          <Text
+            style={{
+              alignSelf: "center",
+            }}
+          >
+            Test bulunamadı.
+          </Text>
+        )}
       </View>
     </SafeAreaView>
   );
